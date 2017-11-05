@@ -50,6 +50,8 @@ public class ImageAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup arg2) {
         if (convertView == null) {
+            inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            convertView = inflater.inflate(R.layout.image_layout, null);
 
             ImageView image = (ImageView) convertView.findViewById(R.id.image);
             imageLoader.DisplayImage(data.get(position), image);

@@ -82,14 +82,15 @@ public class MainSearchActivity extends AppCompatActivity implements AdapterView
         handler.postDelayed(new Runnable(){
                 @Override
                 public void run() {
-                    if(imageLoaderTask != null  && imageLoaderTask.getStatus() ==  AsyncTask.Status.RUNNING){
+                    if(imageLoaderTask != null  && (imageLoaderTask.getStatus() ==  AsyncTask.Status.RUNNING || imageLoaderTask.getStatus() ==  AsyncTask.Status.PENDING)){
                         imageLoaderTask.cancel(true);
+                        imageLoaderTask = new ImageLoaderTask();
                         imageLoaderTask.execute(keyWord);
                     }
                     else
                         imageLoaderTask.execute(keyWord);
                 }
-        }, 1*1000);
+        }, 5*1000);
             return false;
     }
 
