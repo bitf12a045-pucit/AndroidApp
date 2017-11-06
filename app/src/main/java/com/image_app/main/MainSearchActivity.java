@@ -1,44 +1,32 @@
 package com.image_app.main;
 
-import android.content.Context;
 import android.content.Intent;
-import android.content.res.Resources;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AppCompatActivity;
 
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+
 import com.example.ruhiya.awsomeimageapp.R;
 import com.image_app.adapters.ImageAdapter;
 import com.image_app.models.Url;
-import com.image_app.utility.HttpRequest;
-import com.image_app.utility.ImageLoader;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.BindView;
-import butterknife.OnClick;
 
 
-public class MainSearchActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, View.OnKeyListener {
+public class MainSearchActivity extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
     @BindView(R.id.searchBar)
     public EditText searchText;
@@ -46,13 +34,13 @@ public class MainSearchActivity extends AppCompatActivity implements AdapterView
     @BindView(R.id.gridview)
     public GridView grid;
 
-    private final Search search = new Search();
     private ImageAdapter imageAdapter;
     private String keyWord="";
     Handler handler = new Handler();
     List<String> imageUrls;
     List<Url> listUrls = new ArrayList<>();
     ImageLoaderTask imageLoaderTask;
+    private MyClickHandler mKeyhandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,46 +48,72 @@ public class MainSearchActivity extends AppCompatActivity implements AdapterView
         setContentView(R.layout.activity_search);
         ButterKnife.bind(this);
         imageUrls = new ArrayList<>();
-        searchText.setOnKeyListener(this);
-
+        mKeyhandler=new MyClickHandler();
         imageLoaderTask = new ImageLoaderTask();
         imageAdapter = new ImageAdapter(this, imageUrls);
         grid.setAdapter(imageAdapter);
+        grid.setOnItemClickListener(this);
         imageAdapter.notifyDataSetChanged();
-
     }
 
     protected void updateItemsInUI() {
+        imageUrls.clear();
         for(Url url : listUrls){
             imageUrls.add(url.getUrl());
         }
         imageAdapter.notifyDataSetChanged();
     }
 
+
     @Override
-    public boolean onKey (View v,int keyCode, KeyEvent event){
+    public boolean onKeyUp(int keyCode, KeyEvent event) {
+
         keyWord = searchText.getText().toString();
-        handler.postDelayed(new Runnable(){
-                @Override
-                public void run() {
-                    if(imageLoaderTask != null  && (imageLoaderTask.getStatus() ==  AsyncTask.Status.RUNNING || imageLoaderTask.getStatus() ==  AsyncTask.Status.PENDING)){
-                        imageLoaderTask.cancel(true);
-                        imageLoaderTask = new ImageLoaderTask();
-                        imageLoaderTask.execute(keyWord);
-                    }
-                    else
-                        imageLoaderTask.execute(keyWord);
-                }
-        }, 5*1000);
+
+        try {
+            imageLoaderTask.cancel(true);
+            handler.removeCallbacks(mKeyhandler);
+        }catch (Exception e){}
+
+        handler.postDelayed(mKeyhandler, 100);
+
             return false;
     }
 
+    class MyClickHandler implements Runnable{
+        @Override
+        public void run() {
+            if(imageLoaderTask != null  && (imageLoaderTask.getStatus() ==  AsyncTask.Status.RUNNING
+                    || imageLoaderTask.getStatus() ==  AsyncTask.Status.PENDING )){
+
+                try {        imageLoaderTask.cancel(true);
+                }catch (Exception e){}
+
+                try {
+                    imageLoaderTask = new ImageLoaderTask();
+                    imageLoaderTask.execute(keyWord);
+                }catch (Exception e){}
+            }
+            else {
+                try {
+                    imageLoaderTask = new ImageLoaderTask();
+                    imageLoaderTask.execute(keyWord);
+                }catch (Exception e){}
+                }
+        }
+    }
 
      class ImageLoaderTask extends AsyncTask<String, Void, Void> {
 
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            updateItemsInUI();
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    updateItemsInUI();
+                }
+            });
+
         }
 
         @Override
@@ -121,10 +135,19 @@ public class MainSearchActivity extends AppCompatActivity implements AdapterView
 
 
     @Override
-    public void onItemClick(AdapterView<?> arg0, View view, int arg2, long arg3) {
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        String urlStr=  (String) view.getTag();
+        Url imgObj=null;
+        for(Url url : listUrls){
+            if(url.getUrl().equals(urlStr)){
+                imgObj = url;
+            }
+        }
         Intent intent = new Intent(MainSearchActivity.this,DescriptionPageActivity.class);
         Bundle b=new Bundle();
-        b.putString("keyword", keyWord);
+        b.putString("title", keyWord);
+        b.putString("url", imgObj.get_largeUrl());
+        b.putString("site", imgObj.getSite());
         intent.putExtras(b);
         startActivity(intent);
 

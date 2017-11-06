@@ -2,33 +2,28 @@ package com.image_app.adapters;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Adapter;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 
 import com.example.ruhiya.awsomeimageapp.R;
-import com.image_app.utility.ImageLoader;
+import com.image_app.cache.ImageLoader;
 
 import java.util.List;
-
-import butterknife.BindView;
 
 public class ImageAdapter extends BaseAdapter {
 
     private static LayoutInflater inflater=null;
     public ImageLoader imageLoader;
-    private Context mContext;
+    private Activity mContext;
 
     List<String> data;
 
 
 
-    public ImageAdapter(Context contxt,List<String> urls) {
+    public ImageAdapter(Activity contxt, List<String> urls) {
         super();
         mContext = contxt;
         imageLoader=new ImageLoader(mContext);
@@ -53,8 +48,12 @@ public class ImageAdapter extends BaseAdapter {
             inflater = (LayoutInflater)mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView = inflater.inflate(R.layout.image_layout, null);
 
+            String imgPath=data.get(position);
+
             ImageView image = (ImageView) convertView.findViewById(R.id.image);
-            imageLoader.DisplayImage(data.get(position), image);
+            imageLoader.DisplayImage(imgPath, mContext,image,R.drawable.no_image);
+
+            convertView.setTag(imgPath);
 
         }
 

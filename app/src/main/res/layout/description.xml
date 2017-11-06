@@ -2,22 +2,25 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:layout_weight="1">
 
     <TextView
         android:id="@+id/desc_page_heading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Image Name"
-        android:textSize="25sp"
+        android:textSize="15sp"
         android:paddingRight="5sp"
         android:paddingLeft="10sp"
-        android:paddingTop="5sp"
-        android:layout_gravity="center" />
+        android:paddingTop="5sp" />
 
     <ImageView
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="0dp"
+        android:layout_gravity="center"
+        android:id="@+id/large_img"
+        android:layout_weight="1"/>
 
 
     <TextView
@@ -28,7 +31,7 @@
         android:paddingTop="5sp"
         android:paddingRight="10sp"
         android:paddingLeft="10sp"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
     <TextView
         android:id="@+id/desc_page_content_type"
@@ -38,17 +41,7 @@
         android:paddingTop="5sp"
         android:paddingRight="10sp"
         android:paddingLeft="10sp"
-        android:textSize="20sp" />
+        android:textSize="15sp" />
 
-    <TextView
-        android:id="@+id/desc_page_content"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Content"
-        android:textSize="15sp"
-        android:paddingTop="5sp"
-        android:paddingRight="10sp"
-        android:paddingLeft="10sp"
-        android:autoLink="web" />
 
 </LinearLayout>
