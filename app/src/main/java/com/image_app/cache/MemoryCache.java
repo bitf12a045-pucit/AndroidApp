@@ -1,81 +1,24 @@
 package com.image_app.cache;
 
-/**
- * Created by Ruhiya on 2017-11-05.
- */
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Map.Entry;
+import java.lang.ref.SoftReference;
+import java.util.HashMap;
 import android.graphics.Bitmap;
 
-
 public class MemoryCache {
-
-    private static final String TAG = "MemoryCache";
-    private Map<String, Bitmap> cache=Collections.synchronizedMap(
-            new LinkedHashMap<String, Bitmap>(10,1.5f,true));
-    private long size=0;
-    private long limit=1000000;
-
-    public MemoryCache(){
-        setLimit(Runtime.getRuntime().maxMemory()/4);
-    }
-
-    public void setLimit(long new_limit){
-        limit=new_limit;
-    }
-
+    private HashMap<String, SoftReference<Bitmap>> cache=new HashMap<String, SoftReference<Bitmap>>();
+    
     public Bitmap get(String id){
-        try{
-            if(!cache.containsKey(id))
-                return null;
-            return cache.get(id);
-        }catch(NullPointerException ex){
-            ex.printStackTrace();
+        if(!cache.containsKey(id))
             return null;
-        }
+        SoftReference<Bitmap> ref=cache.get(id);
+        return ref.get();
     }
-
+    
     public void put(String id, Bitmap bitmap){
-        try{
-            if(cache.containsKey(id))
-                size-=getSizeInBytes(cache.get(id));
-            cache.put(id, bitmap);
-            size+=getSizeInBytes(bitmap);
-            checkSize();
-        }catch(Throwable th){
-            th.printStackTrace();
-        }
-    }
-
-    private void checkSize() {
-        if(size>limit){
-            Iterator<Entry<String, Bitmap>> iter=cache.entrySet().iterator();
-            while(iter.hasNext()){
-                Entry<String, Bitmap> entry=iter.next();
-                size-=getSizeInBytes(entry.getValue());
-                iter.remove();
-                if(size<=limit)
-                    break;
-            }
-        }
+        cache.put(id, new SoftReference<Bitmap>(bitmap));
     }
 
     public void clear() {
-        try{
-            cache.clear();
-            size=0;
-        }catch(NullPointerException ex){
-            ex.printStackTrace();
-        }
-    }
-
-    long getSizeInBytes(Bitmap bitmap) {
-        if(bitmap==null)
-            return 0;
-        return bitmap.getRowBytes() * bitmap.getHeight();
+        cache.clear();
     }
 }

@@ -1,38 +1,36 @@
 package com.image_app.cache;
 
-/**
- * Created by Ruhiya on 2017-11-05.
- */
-
 import java.io.File;
-import java.net.URLEncoder;
-
 import android.content.Context;
+import android.util.Log;
 
 public class FileCache {
-
+    
     private File cacheDir;
+    final String SDCARD_APP_FOLDER_NAME="ImageTestRuh";
 
     public FileCache(Context context){
         if (android.os.Environment.getExternalStorageState().equals(android.os.Environment.MEDIA_MOUNTED))
-            cacheDir=new File(android.os.Environment.getExternalStorageDirectory(),"ImageList");
+            cacheDir=new File(android.os.Environment.getExternalStorageDirectory(),SDCARD_APP_FOLDER_NAME);
         else
             cacheDir=context.getCacheDir();
         if(!cacheDir.exists())
-            cacheDir.mkdirs();
+        {
+          Boolean res=cacheDir.mkdirs();
+          if(!res)
+              Log.e("ERR>>","folder not created");
+        }
     }
-
+    
     public File getFile(String url){
-        String filename= URLEncoder.encode(url);
+        String filename=String.valueOf(url.hashCode());
         File f = new File(cacheDir, filename);
         return f;
-
+        
     }
-
+    
     public void clear(){
         File[] files=cacheDir.listFiles();
-        if(files==null)
-            return;
         for(File f:files)
             f.delete();
     }

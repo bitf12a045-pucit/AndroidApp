@@ -1,53 +1,68 @@
 package com.image_app.models;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.annotation.JsonPropertyOrder;
-
-@JsonInclude(JsonInclude.Include.NON_NULL)
-@JsonPropertyOrder({
-		"id",
-		"url",
-		"largeUrl"
-})
 public class Url {
 
-	@JsonProperty("id")
 	String id;
-
-	@JsonProperty("url")
 	String url;
 
-	@JsonProperty("largeUrl")
-	String largeUrl;
+	String large_url;
 
-	@JsonProperty("id")
+	String copyright;
+
+	String site;
+
+	String source_id;
+
+
+
+	public String getCopyright() {
+		return copyright;
+	}
+
+	public void setCopyright(String copyright) {
+		this.copyright = copyright;
+	}
+
+	public String getSite() {
+		return site;
+	}
+
+	public void setSite(String site) {
+		this.site = site;
+	}
+
+	public String getSource_id() {
+		return source_id;
+	}
+
+	public void setSource_id(String source_id) {
+		this.source_id = source_id;
+	}
+
+
+
 	public String getId() {
 		return id;
 	}
 
-	@JsonProperty("id")
 	public void setId(String id) {
 		this.id = id;
 	}
 
-	@JsonProperty("url")
+
 	public String getUrl() {
 		return url;
 	}
 
-	@JsonProperty("url")
 	public void setUrl(String url) {
 		this.url = url;
 	}
 
-	@JsonProperty("largeUrl")
-	public String getLargeUrl() {
-		return largeUrl;
+	public String get_largeUrl() {
+		return large_url;
 	}
 
-	@JsonProperty("largeUrl")
-	public void setLargeUrl(String largeUrl) {
-		this.largeUrl = largeUrl;
+	public void set_largeUrl(String largeUrl) {
+		this.large_url = largeUrl;
 	}
 }
